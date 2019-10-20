@@ -13,7 +13,7 @@ import MediaPlayer
  */
 public class QueuedAudioPlayer: AudioPlayer {
     
-    let queueManager: QueueManager = QueueManager<AudioItem>()
+    public let queueManager: QueueManager = QueueManager<AudioItem>()
     
     /**
      Set wether the player should automatically play the next song when a song is finished.

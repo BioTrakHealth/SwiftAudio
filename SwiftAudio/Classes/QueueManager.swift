@@ -8,7 +8,7 @@
 import Foundation
 
 
-class QueueManager<T> {
+public class QueueManager<T> {
     
     private var _items: [T] = []
     

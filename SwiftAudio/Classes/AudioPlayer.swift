@@ -214,7 +214,7 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
     
     // MARK: - Remote Command Center
     
-    func enableRemoteCommands(_ commands: [RemoteCommand]) {
+    public func enableRemoteCommands(_ commands: [RemoteCommand]) {
         self.remoteCommandController.enable(commands: commands)
     }
     
