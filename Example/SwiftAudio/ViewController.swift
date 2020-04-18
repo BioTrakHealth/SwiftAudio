@@ -36,6 +36,9 @@ class ViewController: UIViewController {
         controller.player.event.updateDuration.addListener(self, handleAudioPlayerUpdateDuration)
         controller.player.event.didRecreateAVPlayer.addListener(self, handleAVPlayerRecreated)
         controller.player.event.fail.addListener(self, handlePlayerFailure)
+        controller.player.event.queueTrackEnded.addListener(self) { (event) in
+            print("QTE: index=\(event.index), position=\(event.position), nextIndex=\(event.nextIndex)")
+        }
         updateMetaData()
         handleAudioPlayerStateChange(data: controller.player.playerState)
     }
