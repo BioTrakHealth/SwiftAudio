@@ -11,7 +11,7 @@ extension AudioPlayer {
     
     public typealias StateChangeEventData = (AudioPlayerState)
     public typealias PlaybackEndEventData = (PlaybackEndedReason)
-    public typealias QueuedItemPlaybackEndEventData = QueuedItemPlaybackEndedData
+    public typealias QueuedItemPlaybackEndEventData = QueuedAudioPlayer.PlaybackEndedData
     public typealias SecondElapseEventData = (TimeInterval)
     public typealias FailEventData = (Error?)
     public typealias SeekEventData = (seconds: Int, didFinish: Bool)
@@ -40,7 +40,7 @@ extension AudioPlayer {
          in the emitted data so it becomes clear which track ended.
          - Important: Remember to dispatch to the main queue if any UI is updated in the event handler.
          */
-        public let queuedItemPlaybackEnd: AudioPlayer.Event<QueuedItemPlaybackEndEventData> = AudioPlayer.Event()
+        public let queuedItemPlaybackEnd: AudioPlayer.Event<QueuedAudioPlayer.PlaybackEndedData> = AudioPlayer.Event()
         
         /**
          Emitted when a second is elapsed in the `AudioPlayer`.

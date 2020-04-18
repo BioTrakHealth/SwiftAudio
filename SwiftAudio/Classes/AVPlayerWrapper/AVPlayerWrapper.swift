@@ -18,12 +18,6 @@ public enum PlaybackEndedReason: String {
     case jumpedToIndex
 }
 
-// structure for emitted events when queued trak playback ends
-public struct QueuedItemPlaybackEndedData {
-    public let reason: PlaybackEndedReason  // reason for playback end
-    public let currentIndex: Int            // current index when event occurred (i.e. before index changes)
-}
-
 class AVPlayerWrapper: AVPlayerWrapperProtocol {
     
     struct Constants {

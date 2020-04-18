@@ -12,6 +12,19 @@ import MediaPlayer
  An audio player that can keep track of a queue of AudioItems.
  */
 public class QueuedAudioPlayer: AudioPlayer {
+
+    // structure for emitted events when queued track playback ends
+    public struct PlaybackEndedData {
+        public let reason: PlaybackEndedReason  // reason for playback end
+        public let currentIndex: Int            // current index when event occurred (i.e. before index changes)
+
+        // shorthand initializer
+        init(_ reason: PlaybackEndedReason, _ currentIndex: Int) {
+            self.reason = reason
+            self.currentIndex = currentIndex
+        }
+    }
+
     
     public let queueManager: QueueManager = QueueManager<AudioItem>()
     
@@ -185,9 +198,7 @@ public class QueuedAudioPlayer: AudioPlayer {
      Emit event for playback end for current item.  We'll emit an event for the queue, and one for the track.
      */
     func emitPlaybackEndEvents(_ reason: PlaybackEndedReason) {
-        event.queuedItemPlaybackEnd.emit(
-            data: QueuedItemPlaybackEndedData(reason: reason,
-                                              currentIndex: currentIndex))
+        event.queuedItemPlaybackEnd.emit(data: PlaybackEndedData(reason, currentIndex))
         event.playbackEnd.emit(data: reason)
     }
     
