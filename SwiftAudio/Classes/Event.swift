@@ -11,7 +11,7 @@ extension AudioPlayer {
     
     public typealias StateChangeEventData = (AudioPlayerState)
     public typealias PlaybackEndEventData = (PlaybackEndedReason)
-    public typealias QueuedItemPlaybackEndEventData = QueuedAudioPlayer.PlaybackEndedData
+    public typealias QueuedTrackEndedEventData = QueuedAudioPlayer.TrackEndedEvent
     public typealias SecondElapseEventData = (TimeInterval)
     public typealias FailEventData = (Error?)
     public typealias SeekEventData = (seconds: Int, didFinish: Bool)
@@ -33,14 +33,16 @@ extension AudioPlayer {
         public let playbackEnd: AudioPlayer.Event<PlaybackEndEventData> = AudioPlayer.Event()
 
         /**
-         Emitted when the playback of a queued item has ended.  This is similar to the event playbackEnd above,
-         but the data includes the index of the item that has stopped playing.  This event is needed because there
-         is a lag between the time the event is emitted, and when the receiver actually receives it.  When received,
-         the queue's current item will have already been updated.  This event encapsulates the current iten index
-         in the emitted data so it becomes clear which track ended.
+         Emitted when the playback of a track in the queue is ended.  The event will contain the current index (index),
+         the time position (position), and (optionally) the next track index (nextIndex).  This is similar to the event
+         playbackEnd above, but the data includes the index of the item that has stopped playing, and the next item.
+         This event is needed because there is a lag between the time the event is emitted, and when the receiver
+         actually receives it.  When received, the queue's current item will have already been updated.  This event
+         encapsulates the current item index, and the next index in the emitted data so it becomes clear which track
+         ended.
          - Important: Remember to dispatch to the main queue if any UI is updated in the event handler.
          */
-        public let queuedItemPlaybackEnd: AudioPlayer.Event<QueuedAudioPlayer.PlaybackEndedData> = AudioPlayer.Event()
+        public let queueTrackEnded: AudioPlayer.Event<QueuedAudioPlayer.TrackEndedEvent> = AudioPlayer.Event()
         
         /**
          Emitted when a second is elapsed in the `AudioPlayer`.

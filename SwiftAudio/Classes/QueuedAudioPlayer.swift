@@ -14,18 +14,20 @@ import MediaPlayer
 public class QueuedAudioPlayer: AudioPlayer {
 
     // structure for emitted events when queued track playback ends
-    public struct PlaybackEndedData {
-        public let reason: PlaybackEndedReason  // reason for playback end
-        public let currentIndex: Int            // current index when event occurred (i.e. before index changes)
+    public struct TrackEndedEvent {
+        public let index: Int       // track index that ended
+        public let position: Double // time position within this track
+        public let nextIndex: Int?  // next track index (nil if end of queue)
 
         // shorthand initializer
-        init(_ reason: PlaybackEndedReason, _ currentIndex: Int) {
-            self.reason = reason
-            self.currentIndex = currentIndex
+        init(_ index: Int, _ position: Double, nextIndex: Int?) {
+            self.index = index
+            self.position = position
+            self.nextIndex = nextIndex
         }
     }
 
-    
+
     public let queueManager: QueueManager = QueueManager<AudioItem>()
     
     /**
@@ -164,7 +166,7 @@ public class QueuedAudioPlayer: AudioPlayer {
      - throws: `APError`
      */
     public func jumpToItem(atIndex index: Int, playWhenReady: Bool = true) throws {
-        emitPlaybackEndEvents(.jumpedToIndex)
+        emitPlaybackEndEvents(.jumpedToIndex, nextIndex: index)
         let item = try queueManager.jump(to: index)
         try self.load(item: item, playWhenReady: playWhenReady)
     }
@@ -197,9 +199,29 @@ public class QueuedAudioPlayer: AudioPlayer {
     /**
      Emit event for playback end for current item.  We'll emit an event for the queue, and one for the track.
      */
-    func emitPlaybackEndEvents(_ reason: PlaybackEndedReason) {
-        event.queuedItemPlaybackEnd.emit(data: PlaybackEndedData(reason, currentIndex))
+    func emitPlaybackEndEvents(_ reason: PlaybackEndedReason, nextIndex: Int? = nil) {
+
+        // emit the event for the track
         event.playbackEnd.emit(data: reason)
+
+        // emit the event for the queue manager
+        let toIndex: Int?
+        switch reason {
+        case .playedUntilEnd:
+            return      // no queue manager event for this (track) event
+        case .playerStopped:
+            return      // no queue manager event for this (track) event
+        case .skippedToNext:
+            toIndex = currentIndex+1 >= items.count ? nil : currentIndex+1
+        case .skippedToPrevious:
+            toIndex = max(0, currentIndex-1)
+        case .jumpedToIndex:
+            toIndex = nextIndex==nil ? nil : max(0, min(nextIndex!, items.count-1))
+        }
+
+        // emit the queue event for track ended
+        event.queueTrackEnded.emit(data:
+            TrackEndedEvent(currentIndex, currentTime, nextIndex: toIndex))
     }
     
     // MARK: - AVPlayerWrapperDelegate
