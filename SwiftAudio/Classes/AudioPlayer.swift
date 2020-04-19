@@ -199,7 +199,7 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
     public func stop() {
         self.reset()
         self.wrapper.stop()
-        self.event.playbackEnd.emit(data: .playerStopped)
+        emitPlaybackEndEvents(.playerStopped)
     }
     
     /**
@@ -301,6 +301,15 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
             wrapper.currentItem?.audioTimePitchAlgorithm = audioTimePitchAlgorithm
         }
     }
+
+    private func emitPlaybackEndEvents(_ reason: PlaybackEndEventData) {
+        self.event.playbackEnd.emit(data: reason)
+        self.event.playbackEndWithInfo.emit(data: PlaybackEndWithInfoEvent(
+            reason: reason,
+            currentItem: currentItem,
+            currentTime: currentTime,
+            nextItem: (self as? QueuedAudioPlayer)?.nextItems.first))
+    }
     
     // MARK: - AVPlayerWrapperDelegate
     
@@ -351,7 +360,7 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
     }
     
     func AVWrapperItemDidPlayToEndTime() {
-        self.event.playbackEnd.emit(data: .playedUntilEnd)
+        emitPlaybackEndEvents(.playedUntilEnd)
     }
     
     func AVWrapperDidRecreateAVPlayer() {

@@ -17,6 +17,14 @@ extension AudioPlayer {
     public typealias SeekEventData = (seconds: Int, didFinish: Bool)
     public typealias UpdateDurationEventData = (Double)
     public typealias DidRecreateAVPlayerEventData = ()
+
+    // structure for info returned with playbackEndWithInfo event
+    public struct PlaybackEndWithInfoEvent {
+        public let reason: PlaybackEndedReason
+        public let currentItem: AudioItem?
+        public let currentTime: Double
+        public let nextItem: AudioItem?
+    }
     
     public struct EventHolder {
         
@@ -37,6 +45,15 @@ extension AudioPlayer {
          - Important: Remember to dispatch to the main queue if any UI is updated in the event handler.
          */
         public let playbackEnd: AudioPlayer.Event<PlaybackEndEventData> = AudioPlayer.Event()
+
+        /**
+         Emitted when the playback of the player, for some reason, has stopped.  This event is similar to
+         playbackEnd above, but it also encapsulates the 'current' track info at the time of the event.
+         This event is needed because there is a lag between the time the event is emitted, and when the receiver
+         actually receives it.  When received, the queue's current item will have already been updated.  This event
+         encapsul
+         */
+        public let playbackEndWithInfo: AudioPlayer.Event<PlaybackEndWithInfoEvent> = AudioPlayer.Event()
 
         /**
          Emitted when the playback of a track in the queue is ended.  The event will contain the current index (index),
