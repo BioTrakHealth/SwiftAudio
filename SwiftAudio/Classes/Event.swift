@@ -25,6 +25,12 @@ extension AudioPlayer {
          - Important: Remember to dispatch to the main queue if any UI is updated in the event handler.
          */
         public let stateChange: AudioPlayer.Event<StateChangeEventData> = AudioPlayer.Event()
+
+        /**
+         Emitted when the `AudioPlayer` state is changed.  The current player queue info is also included.
+         - Important: Remember to dispatch to the main queue if any UI is updated in the event handler.
+         */
+        public let stateChangeWithQueueState: AudioPlayer.Event<QueuedAudioPlayer.PlayerStateChangeEvent> = AudioPlayer.Event()
         
         /**
          Emitted when the playback of the player, for some reason, has stopped.

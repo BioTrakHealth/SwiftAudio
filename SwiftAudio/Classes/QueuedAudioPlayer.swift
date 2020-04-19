@@ -27,6 +27,13 @@ public class QueuedAudioPlayer: AudioPlayer {
         }
     }
 
+    // structure for player state change events, including queue info
+    public struct PlayerStateChangeEvent {
+        public let state: AudioPlayerState
+        public let currentIndex: Int
+        public let currentTime: Double
+    }
+    
 
     public let queueManager: QueueManager = QueueManager<AudioItem>()
     

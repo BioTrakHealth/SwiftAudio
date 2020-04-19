@@ -318,6 +318,17 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
         default: break
         }
         self.event.stateChange.emit(data: state)
+
+        // emit state with item info
+        if let queue = self as? QueuedAudioPlayer {
+            print("##### \(state.rawValue): currentIndex=\(queue.currentIndex), currentTime=\(currentTime), currentItem.title=\(currentItem?.getTitle())")
+            self.event.stateChangeWithQueueState.emit(data:
+                QueuedAudioPlayer.PlayerStateChangeEvent(
+                    state: state,
+                    currentIndex: queue.currentIndex,
+                    currentTime: currentTime)
+            )
+        }
     }
     
     func AVWrapper(secondsElapsed seconds: Double) {
