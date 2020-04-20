@@ -302,8 +302,20 @@ public class AudioPlayer: AVPlayerWrapperDelegate {
         }
     }
 
-    func emitPlaybackEndEvents(_ reason: PlaybackEndEventData) {
+    func emitPlaybackEndEvents(_ reason: PlaybackEndEventData, nextItem _nextItem: AudioItem? = nil) {
         self.event.playbackEnd.emit(data: reason)
+
+        // determine the next item
+        var nextItem: AudioItem?
+        if nextItem == nil {
+            switch reason {
+            case .playerStopped:        nextItem = currentItem
+            case .playedUntilEnd:       fallthrough
+            case .skippedToNext:        nextItem = (self as? QueuedAudioPlayer)?.nextItems.first
+            case .skippedToPrevious:    nextItem = (self as? QueuedAudioPlayer)?.previousItems.last
+            case .jumpedToIndex:        nextItem = _nextItem
+            }
+        }
         self.event.playbackEndWithInfo.emit(data: PlaybackEndWithInfoEvent(
             reason: reason,
             currentItem: currentItem,

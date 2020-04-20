@@ -151,7 +151,8 @@ public class QueuedAudioPlayer: AudioPlayer {
      - throws: `APError`
      */
     public func jumpToItem(atIndex index: Int, playWhenReady: Bool = true) throws {
-        emitPlaybackEndEvents(.jumpedToIndex)
+        let toItem = index>=0 && index<items.count ? items[index] : nil
+        emitPlaybackEndEvents(.jumpedToIndex, nextItem: toItem)
         let item = try queueManager.jump(to: index)
         try self.load(item: item, playWhenReady: playWhenReady)
     }
